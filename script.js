@@ -95,25 +95,57 @@ const printUser = (coleccionUsuarios, docId) => {
   };
 
 
-    //Delete
-const deleteUser = () => {
-    const borrar = collection(db, "datos");
-    db.collection('datos').doc(borrar).delete().then(() => {
-      alert(`Se han borrado todos los usuarios.`);
-      //Clean
-      document.getElementById('datos').innerHTML = "";
-      //Read all again
-      readAll();
-    })
-      .catch(() => console.log('Error borrando documento'));
-  };
+    //Delete all
+    const deleteUsers = () => {
+      db.collection('datos').get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          doc.ref.delete(); //itera y borra todos por la referencia
+        });
+      }).then(() => {
+        alert('Se han borrado todos los usuarios');
+        document.getElementById('datos').innerHTML = ''; //y aqui se aprovecha para hacer clean
+    
+      }).catch((error) => {
+        console.error('Error borrando documentos: ', error);
+      });
+    };
 
-   //Read all
+    const deleteOne = () => {
+      const id = prompt('Introduce el ID a borrar');
+      db.collection('datos').doc(id).delete().then(() => {
+        alert(`Documento ${id} ha sido borrado`);
+        //Clean
+        document.getElementById('datos').innerHTML = "";
+        //Read all again
+        readAll();
+      })
+        .catch(() => console.log('Error borrando documento'));
+    };
+
+
+ //Clean 
+ const cleanAlbum = () => {
+  document.getElementById('datos').innerHTML = "";
+};
+
+
+   //Read all event
 document.getElementById("read-all").addEventListener("click", () => {
     readAll();
   });
 
-  //Delete one
-  document.getElementById('delete').addEventListener('click', () => {
-    deleteUser();
+  //Delete all event
+  document.getElementById('delete-all').addEventListener('click', () => {
+    deleteUsers();
+  });
+
+  //Delete one event
+  document.getElementById('one-out').addEventListener('click', () => {
+    deleteOne();
+  });
+
+
+   //Clean event
+   document.getElementById('clean').addEventListener('click', () => {
+    cleanAlbum();
   });
